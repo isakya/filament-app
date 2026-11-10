@@ -28,8 +28,17 @@ class PostForm
                     ->schema([ // Section layout 分区，分为单独一个区块
                         Group::make()
                             ->schema([
-                                TextInput::make("title"),
-                                TextInput::make("slug"),
+                                TextInput::make("title")
+                                    // ->rule("required"), // 必填项 单个为 rule
+                                    // ->rules("required|min:3"), // 多个为 rules
+                                    ->rules(["required", "min:3", "max:10"]), // 也可以通过数组传递参数
+                                TextInput::make("slug")
+                                    // ->required(), // 出现必填 * 号提示
+                                    ->unique() // 通过查询数据库判断是否为唯一值
+                                    ->validationMessages([ // 验证提示信息
+                                        "unique" => "slug should be unique."
+                                    ]),
+
                                 // Select::make("category_id")->options(["one", "two"]), // 选项示例
                                 Select::make("category_id")
                                     ->label("Category") // 修改表单的label文案
