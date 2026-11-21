@@ -2,10 +2,16 @@
 
 namespace App\Filament\Resources\Posts\Tables;
 
+use App\Models\Post;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ReplicateAction;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
@@ -57,7 +63,23 @@ class PostsTable
                     ->preload() // 前把关联的选项数据从数据库查询出来渲染到前端
             ])
             ->recordActions([
-                EditAction::make(),
+                Action::make("Status")
+                    ->label("Status Change")
+                    ->icon(Heroicon::AcademicCap)
+                    ->schema([
+                        Checkbox::make("published")
+                        // 核心修改：根据当前记录的 published 字段设置默认值
+                        ->default(function ($record) { // 设置 Checkbox 的初始值
+                            return (bool) $record->published; // (bool) 强制类型转换 0 false , 1 true 
+                        }) 
+                    ])
+                    ->action(function(array $data, Post $record) {
+                        $record->published = $data['published'];
+                        $record->save();
+                    }),
+                ReplicateAction::make(), // 复制
+                DeleteAction::make(), // 删除
+                EditAction::make(), // 编辑
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
