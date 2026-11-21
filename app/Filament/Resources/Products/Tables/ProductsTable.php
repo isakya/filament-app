@@ -18,6 +18,7 @@ class ProductsTable
         return $table
             ->columns([
                 ImageColumn::make("image")->disk("public"),
+                TextColumn::make("title"),
                 TextColumn::make("name"),
                 TextColumn::make("sku"),
                 TextColumn::make("price"),
