@@ -7,6 +7,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Columns\ColorColumn;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -19,16 +20,19 @@ class PostsTable
     {
         return $table
             ->columns([
-                ImageColumn::make("image")->disk("public"), // 要展示图片，第一次需要命令行执行 php artisan storage:link 链接好资源地址
-                TextColumn::make("title")->sortable()->searchable(),
-                TextColumn::make("slug")->sortable()->searchable(),
-                TextColumn::make("category.name")->sortable()->searchable(), // 因为在 app/Models/Post 关联了 Category 表，所以可以这样操作
-                ColorColumn::make("color"),
+                TextColumn::make("id")->label("ID")->toggleable(isToggledHiddenByDefault:true),
+                ImageColumn::make("image")->disk("public")->toggleable(), // 要展示图片，第一次需要命令行执行 php artisan storage:link 链接好资源地址
+                TextColumn::make("title")->sortable()->searchable()->toggleable(),
+                TextColumn::make("slug")->sortable()->searchable()->toggleable(),
+                TextColumn::make("category.name")->sortable()->searchable()->toggleable(), // 因为在 app/Models/Post 关联了 Category 表，所以可以这样操作
+                ColorColumn::make("color")->toggleable(),
                 TextColumn::make("created_at")
                 ->label("Created At")
                 ->datetime()
-                ->sortable(),
-
+                ->sortable()
+                ->toggleable(),
+                TextColumn::make("tags")->label("Tags")->toggleable(isToggledHiddenByDefault:true),
+                IconColumn::make("published")->boolean()->toggleable(isToggledHiddenByDefault:true),
             ])
             ->defaultSort("title","asc")
             ->filters([
